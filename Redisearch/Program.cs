@@ -14,15 +14,27 @@ namespace Redisearch
         private static ConnectionMultiplexer _cnn;
         private IDatabase GetRedisDb()
         {
+            _cnn = ConnectionMultiplexer.Connect("localhost");
             return _cnn.GetDatabase();
         }
         static void Main(string[] args)
         {
             Program p = new Program();
 
-            IList<MarkIndex_Luke> markIndex_Lukes = p.GetAllFromDb();
+            //    IList<MarkIndex_Luke> markIndex_Lukes = p.GetAllFromDb();
 
-            p.Add_Redis(markIndex_Lukes);
+            //  p.Add_Redis(markIndex_Lukes);
+            p.SearchQuery();
+        }
+
+        public void SearchQuery()
+        {
+            var q = new Query("WIM")
+              //  .AddFilter(new Query.NumericFilter("price", 1300, 1350))
+              .Limit(0, 5);
+            var db = GetRedisDb();
+            Client client = new Client("MarkIndex_Luke", db);
+            var res = client.Search(q);
         }
 
         public IList<MarkIndex_Luke> GetAllFromDb()
@@ -37,7 +49,7 @@ namespace Redisearch
 
         public void Add_Redis(IList<MarkIndex_Luke> markIndex_Lukes)
         {
-            _cnn = ConnectionMultiplexer.Connect("localhost");
+         
 
             var db = GetRedisDb();
 
